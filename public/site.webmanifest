@@ -1,0 +1,10 @@
+{
+  "name": "VÉRANT — Maison de Couture",
+  "short_name": "VÉRANT",
+  "description": "Luxury fashion maison. Sharp tailoring, heavy cottons and hand-finished sneakers.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FBFAF7",
+  "theme_color": "#0B3D2E",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

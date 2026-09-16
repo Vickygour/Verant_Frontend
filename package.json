@@ -1,0 +1,33 @@
+{
+  "name": "verant-maison",
+  "version": "1.0.0",
+  "private": true,
+  "description": "VÉRANT — Maison de Couture. Luxury fashion storefront built with Next.js App Router.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "docker:build": "docker build -t verant-maison .",
+    "docker:run": "docker run -p 3000:3000 verant-maison",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "lucide-react": "^0.454.0",
+    "next": "14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
+  }
+}
