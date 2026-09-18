@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Banknote, CreditCard, Info, Lock, ShoppingBag, Smartphone } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
 import PageAnimations from '@/components/ui/PageAnimations';
 import SuccessModal from '@/components/overlays/SuccessModal';
-import { getProduct } from '@/data/products';
 import { useStore } from '@/context/StoreContext';
 import { useUI } from '@/context/UIContext';
-import { createOrderId, formatPrice } from '@/lib/format';
+import { useCatalog } from '@/context/CatalogContext';
+import { useAuth } from '@/context/AuthContext';
+import orderService from '@/lib/api/orders.service';
+import userService from '@/lib/api/users.service';
+import { formatPrice } from '@/lib/format';
 import {
   FREE_SHIPPING_THRESHOLD,
   GST_RATE,
@@ -34,12 +38,18 @@ const EMPTY_ADDRESS = {
 };
 
 /**
- * Demo checkout. No payment provider is wired up — swapping `placeOrder`
- * for a server action that creates a Razorpay/Stripe intent is the only change needed.
+ * Checkout backed by POST /api/orders.
+ * Only ids, quantities and choices are sent — the server re-prices every line
+ * from MongoDB, checks stock, decrements it and mails the confirmation.
  */
 export default function CheckoutClient() {
+  const router = useRouter();
   const { cart, subtotal, clearCart } = useStore();
   const { toast, openSuccess } = useUI();
+  const { getProduct } = useCatalog();
+  const { isAuthenticated } = useAuth();
+
+  const placingRef = useRef(false);
 
   const [form, setForm] = useState(EMPTY_ADDRESS);
   const [shipMethod, setShipMethod] = useState('standard');
@@ -52,7 +62,9 @@ export default function CheckoutClient() {
 
   const setField = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
+    if (placingRef.current) return;
+
     const required = [
       ['name', 'Full name'],
       ['phone', 'Phone'],
@@ -84,9 +96,62 @@ export default function CheckoutClient() {
       return;
     }
 
-    setOrder({ id: createOrderId(), total: formatPrice(total), email: form.email });
-    clearCart();
-    openSuccess();
+    // The orders endpoint is protected — send guests to sign in and come back.
+    if (!isAuthenticated) {
+      toast('Sign In Required', 'Please sign in to complete your order.');
+      router.push('/login?redirect=/checkout');
+      return;
+    }
+
+    placingRef.current = true;
+
+    try {
+      const placed = await orderService.create({
+        items: cart.map((item) => ({
+          productId: item.id,
+          qty: item.qty,
+          size: item.size,
+          color: item.color,
+        })),
+        shippingAddress: {
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          email: form.email.trim(),
+          address: form.address.trim(),
+          city: form.city.trim(),
+          pin: form.pin.trim(),
+          state: form.state,
+        },
+        shipMethod,
+        paymentMethod: payMethod,
+        upiId,
+      });
+
+      // Best-effort: keep the address in the customer's address book.
+      userService
+        .addAddress({
+          name: form.name.trim(),
+          phone: form.phone.trim(),
+          email: form.email.trim(),
+          address: form.address.trim(),
+          city: form.city.trim(),
+          pin: form.pin.trim(),
+          state: form.state,
+        })
+        .catch(() => {});
+
+      setOrder({
+        id: placed?.orderId,
+        total: formatPrice(placed?.total ?? total),
+        email: form.email,
+      });
+      clearCart();
+      openSuccess();
+    } catch (err) {
+      toast('Order Failed', err.message);
+    } finally {
+      placingRef.current = false;
+    }
   };
 
   return (

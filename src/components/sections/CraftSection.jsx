@@ -1,7 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
-import { CRAFT } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 
 const FIGURES = [
   ['18', 'Stitches / inch'],
@@ -11,6 +13,8 @@ const FIGURES = [
 ];
 
 export default function CraftSection() {
+  const { craft } = useCatalog();
+
   return (
     <section className="bg-emerald-deep text-white relative overflow-hidden">
       <div className="blob w-[600px] h-[600px] bg-emerald-light/30 -top-40 right-0" />
@@ -51,7 +55,7 @@ export default function CraftSection() {
         </div>
 
         <div className="grid grid-cols-2 gap-4" data-stagger>
-          {CRAFT.map((item, i) => (
+          {craft.map((item, i) => (
             <div
               key={item.t}
               className={`relative overflow-hidden border border-white/10 ${i % 2 ? 'mt-8' : ''}`}

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Heart, X } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
-import { getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { useStore } from '@/context/StoreContext';
 import { useUI } from '@/context/UIContext';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
@@ -12,6 +12,7 @@ import { formatPrice } from '@/lib/format';
 export default function WishlistDrawer() {
   const { overlays, closeWishlist } = useUI();
   const { wishlist, moveToCart, toggleWishlist } = useStore();
+  const { getProduct } = useCatalog();
 
   const open = overlays.wishlist;
   useLockBodyScroll(open);

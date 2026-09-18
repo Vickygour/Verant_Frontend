@@ -1,15 +1,7 @@
 import ProductCard from '@/components/product/ProductCard';
 import SectionHead from '@/components/ui/SectionHead';
 
-const LAYOUT = [
-  'md:col-span-7',
-  'md:col-span-5 md:mt-24',
-  'md:col-span-5',
-  'md:col-span-7 md:-mt-10',
-  'md:col-span-8 md:col-start-3',
-];
-
-/** Editorial five-piece grid with deliberate vertical offsets. */
+/** Horizontal slider — 4 cards per row (desktop), 2 (tablet), 1.2 (mobile) */
 export default function FeaturedIcons({ products }) {
   return (
     <section className="max-w-[1400px] mx-auto px-5 md:px-10 lg:px-12 py-20 md:py-28">
@@ -26,13 +18,32 @@ export default function FeaturedIcons({ products }) {
         action={{ label: 'Shop All Men', href: '/men' }}
       />
 
-      <div className="grid md:grid-cols-12 gap-5">
-        {products.map((product, i) => (
-          <div key={product.id} className={LAYOUT[i]}>
-            <ProductCard product={product} />
-          </div>
-        ))}
+      {/* Slider */}
+      <div className="relative">
+        <div
+          className="
+            flex gap-4 overflow-x-auto snap-x snap-mandatory
+            scroll-smooth pb-4
+            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {products.map((product) => (
+            <div
+              key={product.id}
+              className="
+                snap-start shrink-0
+                w-[75%] sm:w-[45%] md:w-[32%] lg:w-[24%]
+              "
+            >
+              <ProductCard product={product} />
+            </div>
+          ))}
+        </div>
+
+        {/* Optional: subtle fade edges */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent hidden md:block" />
       </div>
     </section>
   );
 }
+

@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, SearchX, SlidersHorizontal } from 'lucide-react';
 import FilterPanel from '@/components/men/FilterPanel';
 import ProductCard from '@/components/product/ProductCard';
 import PageAnimations from '@/components/ui/PageAnimations';
-import { PRODUCTS } from '@/data/products';
-import { filterProducts } from '@/lib/filterProducts';
+import { filterProducts, matchesQuery } from '@/lib/filterProducts';
 import { DEFAULT_FILTERS, SORT_OPTIONS } from '@/lib/constants';
 import { useUI } from '@/context/UIContext';
+import { useCatalog } from '@/context/CatalogContext';
+import productService from '@/lib/api/products.service';
 
 /**
  * The Men collection: facets, sort, search and a responsive grid.
@@ -16,6 +17,11 @@ import { useUI } from '@/context/UIContext';
  */
 export default function MenCollection({ initialCategory = null }) {
   const { toast } = useUI();
+  const { products: catalogue } = useCatalog();
+
+  // Held in a ref so a late catalogue load doesn't re-trigger the fetch below.
+  const catalogueRef = useRef(catalogue);
+  catalogueRef.current = catalogue;
 
   const [filters, setFilters] = useState({
     ...DEFAULT_FILTERS,
@@ -24,6 +30,7 @@ export default function MenCollection({ initialCategory = null }) {
   const [query, setQuery] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState([]);
 
   // Debounce the free-text search so typing doesn't thrash the grid.
   useEffect(() => {
@@ -31,13 +38,38 @@ export default function MenCollection({ initialCategory = null }) {
     return () => clearTimeout(t);
   }, [query]);
 
-  // Brief skeleton on first paint, matching the original storefront.
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(t);
-  }, []);
+  /**
+   * Facets, price, availability and sort are resolved by GET /api/products;
+   * only the free-text box is matched locally so the grid keeps the exact
+   * substring behaviour the storefront always had.
+   */
+  const { cats, maxPrice, sizes, colors, materials, avail, sort } = filters;
 
-  const results = useMemo(() => filterProducts(filters), [filters]);
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    productService
+      .list({ cats, maxPrice, sizes, colors, materials, avail, sort, limit: 100 })
+      .then((res) => {
+        if (!cancelled) setItems(res.items);
+      })
+      .catch(() => {
+        // API down — fall back to filtering whatever the catalogue holds.
+        if (!cancelled) {
+          setItems(filterProducts({ cats, maxPrice, sizes, colors, materials, avail, sort, query: '' }, catalogueRef.current));
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cats, maxPrice, sizes, colors, materials, avail, sort]);
+
+  const results = useMemo(() => matchesQuery(items, filters.query), [items, filters.query]);
 
   const toggleArrayFilter = (key, value) =>
     setFilters((f) => ({
@@ -119,7 +151,7 @@ export default function MenCollection({ initialCategory = null }) {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-5">
               <div className="text-sm text-muted">
-                Showing <b className="text-ink">{results.length}</b> of {PRODUCTS.length} styles
+                Showing <b className="text-ink">{results.length}</b> of {catalogue.length} styles
               </div>
               <div className="text-[11px] tracking-[0.2em] uppercase font-bold text-muted hidden md:block">
                 Sharp · Minimal · Bespoke

@@ -1,8 +1,12 @@
+'use client';
+
 import SmartImage from '@/components/ui/SmartImage';
 import SectionHead from '@/components/ui/SectionHead';
-import { LOOKS } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 
 export default function LookbookPreview() {
+  const { looks } = useCatalog();
+
   return (
     <section className="bg-offwhite border-y border-line py-20 md:py-28 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-5 md:px-10 lg:px-12">
@@ -25,8 +29,8 @@ export default function LookbookPreview() {
             data-clip
           >
             <SmartImage
-              src={LOOKS[0].img}
-              alt={LOOKS[0].n}
+              src={looks[0]?.img}
+              alt={looks[0]?.n}
               sizes="(max-width: 768px) 100vw, 40vw"
               className="object-cover"
             />
@@ -37,7 +41,7 @@ export default function LookbookPreview() {
           </div>
 
           <div className="md:col-span-7 grid grid-cols-2 gap-5">
-            {LOOKS.slice(1, 5).map((look) => (
+            {looks.slice(1, 5).map((look) => (
               <div
                 key={look.n}
                 className="relative overflow-hidden border border-line aspect-[3/4]"

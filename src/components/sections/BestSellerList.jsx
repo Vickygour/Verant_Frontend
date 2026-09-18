@@ -27,6 +27,8 @@ export default function BestSellerList({ products }) {
             className="grid md:grid-cols-12 bg-white border border-line overflow-hidden hover:border-emerald transition-colors"
             data-reveal
           >
+
+          
             <Link
               href={`/product/${product.id}`}
               className="md:col-span-4 relative overflow-hidden group h-72 md:h-auto md:min-h-[260px]"

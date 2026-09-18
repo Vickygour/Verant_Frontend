@@ -2,12 +2,13 @@
 
 import { useEffect } from 'react';
 import ProductCard from '@/components/product/ProductCard';
-import { getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { useStore } from '@/context/StoreContext';
 
 /** Records the visit and renders the visitor's own history (minus this product). */
 export default function RecentlyViewed({ productId }) {
   const { recent, pushRecent } = useStore();
+  const { getProduct } = useCatalog();
 
   useEffect(() => {
     pushRecent(productId);

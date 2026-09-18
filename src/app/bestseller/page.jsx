@@ -1,7 +1,7 @@
 import PageAnimations from '@/components/ui/PageAnimations';
 import BestSellerHero from '@/components/sections/BestSellerHero';
 import BestSellerList from '@/components/sections/BestSellerList';
-import { PRODUCTS } from '@/data/products';
+import { fetchProducts } from '@/lib/api/server';
 
 export const metadata = {
   title: 'Best Sellers — Most Wanted',
@@ -9,8 +9,11 @@ export const metadata = {
     'Rated by 4,000+ verified clients and restocked monthly. The Vérant pieces India keeps buying.',
 };
 
-export default function BestSellerPage() {
-  const list = PRODUCTS.filter((p) => p.isBest);
+export const revalidate = 60;
+
+export default async function BestSellerPage() {
+  const products = await fetchProducts();
+  const list = products.filter((p) => p.isBest);
 
   return (
     <>

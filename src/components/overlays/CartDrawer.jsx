@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
-import { getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { useStore } from '@/context/StoreContext';
 import { useUI } from '@/context/UIContext';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
@@ -15,6 +15,7 @@ export default function CartDrawer() {
   const router = useRouter();
   const { overlays, closeCart, toast } = useUI();
   const { cart, cartCount, subtotal, updateQty, removeFromCart } = useStore();
+  const { getProduct } = useCatalog();
 
   const open = overlays.cart;
   useLockBodyScroll(open);

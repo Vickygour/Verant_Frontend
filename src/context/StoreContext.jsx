@@ -1,23 +1,73 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
-import { getProduct } from '@/data/products';
 import { MAX_QTY_PER_LINE, STORAGE_KEYS, shippingCost } from '@/lib/constants';
 import { useUI } from '@/context/UIContext';
+import { useCatalog } from '@/context/CatalogContext';
+import { useAuth } from '@/context/AuthContext';
+import wishlistService from '@/lib/api/wishlist.service';
 
 const StoreContext = createContext(null);
 
 /**
  * Commerce state: bag, wishlist and recently-viewed history.
- * Persisted to localStorage so a refresh never loses the bag.
+ * The bag stays local (there is no cart endpoint on the API), while the
+ * wishlist mirrors GET/POST /api/wishlist whenever someone is signed in.
  */
 export function StoreProvider({ children }) {
   const { toast, openCart, closeWishlist } = useUI();
+  const { getProduct } = useCatalog();
+  const { isAuthenticated, user } = useAuth();
 
   const [cart, setCart] = useLocalStorageState(STORAGE_KEYS.cart, []);
   const [wishlist, setWishlist] = useLocalStorageState(STORAGE_KEYS.wishlist, []);
   const [recent, setRecent] = useLocalStorageState(STORAGE_KEYS.recent, []);
+
+  const syncedFor = useRef(null);
+
+  /**
+   * On sign-in: pull the saved wishlist from the server, push anything that was
+   * hearted while signed out, and keep the union. On sign-out: leave whatever
+   * is in localStorage alone so the guest experience is unchanged.
+   */
+  useEffect(() => {
+    if (!isAuthenticated || !user?._id) {
+      syncedFor.current = null;
+      return undefined;
+    }
+    if (syncedFor.current === user._id) return undefined;
+    syncedFor.current = user._id;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const serverProducts = await wishlistService.get();
+        if (cancelled) return;
+
+        const serverIds = serverProducts.map((p) => Number(p.id));
+
+        setWishlist((localIds) => {
+          const localOnly = localIds
+            .map(Number)
+            .filter((id) => !serverIds.includes(id));
+
+          localOnly.forEach((id) => {
+            wishlistService.toggle(id).catch(() => {});
+          });
+
+          return Array.from(new Set([...serverIds, ...localOnly]));
+        });
+      } catch {
+        /* offline or expired token — the local wishlist keeps working */
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, user?._id, setWishlist]);
 
   const addToBag = useCallback(
     (id, size, color, qty = 1) => {
@@ -45,7 +95,7 @@ export function StoreProvider({ children }) {
       openCart();
       toast('Added to Bag', `${product.name} · ${chosenSize}`);
     },
-    [openCart, setCart, toast],
+    [getProduct, openCart, setCart, toast],
   );
 
   const updateQty = useCallback(
@@ -71,7 +121,7 @@ export function StoreProvider({ children }) {
         return prev.filter((_, i) => i !== index);
       });
     },
-    [setCart, toast],
+    [getProduct, setCart, toast],
   );
 
   const clearCart = useCallback(() => setCart([]), [setCart]);
@@ -79,6 +129,7 @@ export function StoreProvider({ children }) {
   const toggleWishlist = useCallback(
     (id) => {
       const numeric = Number(id);
+
       setWishlist((prev) => {
         if (prev.includes(numeric)) {
           toast('Wishlist', 'Removed from wishlist.');
@@ -87,17 +138,23 @@ export function StoreProvider({ children }) {
         toast('Wishlist', 'Saved to your wishlist.');
         return [...prev, numeric];
       });
+
+      // Mirror the change on the server for signed-in clients.
+      if (isAuthenticated) {
+        wishlistService.toggle(numeric).catch(() => {});
+      }
     },
-    [setWishlist, toast],
+    [isAuthenticated, setWishlist, toast],
   );
 
   const moveToCart = useCallback(
     (id) => {
       addToBag(id);
       setWishlist((prev) => prev.filter((w) => w !== Number(id)));
+      if (isAuthenticated) wishlistService.toggle(Number(id)).catch(() => {});
       closeWishlist();
     },
-    [addToBag, closeWishlist, setWishlist],
+    [addToBag, closeWishlist, isAuthenticated, setWishlist],
   );
 
   const pushRecent = useCallback(
@@ -114,7 +171,7 @@ export function StoreProvider({ children }) {
         const product = getProduct(item.id);
         return product ? sum + product.price * item.qty : sum;
       }, 0),
-    [cart],
+    [cart, getProduct],
   );
 
   const cartCount = useMemo(() => cart.reduce((sum, i) => sum + i.qty, 0), [cart]);

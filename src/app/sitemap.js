@@ -1,9 +1,10 @@
-import { PRODUCTS } from '@/data/products';
+import { fetchProducts } from '@/lib/api/server';
 import { SITE } from '@/data/site';
 
 /** Generated sitemap covering static routes and every product page. */
-export default function sitemap() {
+export default async function sitemap() {
   const now = new Date();
+  const PRODUCTS = await fetchProducts();
   const routes = ['', '/new', '/men', '/bestseller', '/about', '/lookbook'].map((path) => ({
     url: `${SITE.url}${path}`,
     lastModified: now,

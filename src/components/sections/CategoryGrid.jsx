@@ -1,13 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
 import SectionHead from '@/components/ui/SectionHead';
-import { CATEGORY_TILES } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 
 /** Category entry points — each link pre-filters the Men collection. */
 export default function CategoryGrid() {
-  const primary = CATEGORY_TILES.slice(0, 4);
-  const secondary = CATEGORY_TILES.slice(4);
+  const { categoryTiles } = useCatalog();
+
+  const primary = categoryTiles.slice(0, 4);
+  const secondary = categoryTiles.slice(4);
 
   return (
     <section className="max-w-[1400px] mx-auto px-5 md:px-10 lg:px-12 py-20 md:py-28">

@@ -6,7 +6,7 @@ import SmartImage from '@/components/ui/SmartImage';
 import Stars from '@/components/ui/Stars';
 import ProductBadge from '@/components/ui/ProductBadge';
 import WishButton from '@/components/ui/WishButton';
-import { getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { useStore } from '@/context/StoreContext';
 import { useUI } from '@/context/UIContext';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
@@ -15,6 +15,7 @@ import { formatPrice } from '@/lib/format';
 export default function QuickViewModal() {
   const { quickViewId, closeQuickView } = useUI();
   const { addToBag } = useStore();
+  const { getProduct } = useCatalog();
 
   const product = quickViewId ? getProduct(quickViewId) : null;
   useLockBodyScroll(Boolean(product));

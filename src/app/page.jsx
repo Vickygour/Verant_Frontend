@@ -9,7 +9,7 @@ import BestSellersRail from '@/components/sections/BestSellersRail';
 import LookbookPreview from '@/components/sections/LookbookPreview';
 import Testimonials from '@/components/sections/Testimonials';
 import NewsletterPanel from '@/components/sections/NewsletterPanel';
-import { PRODUCTS } from '@/data/products';
+import { fetchProducts } from '@/lib/api/server';
 
 export const metadata = {
   title: 'VÉRANT — Maison de Couture | Luxury Fashion',
@@ -17,8 +17,13 @@ export const metadata = {
     'Sharp tailoring, heavy cottons and hand-finished sneakers. Shop the Verdant 07 collection from Maison Vérant.',
 };
 
-export default function HomePage() {
-  const featured = [0, 8, 11, 13, 17].map((i) => PRODUCTS[i]);
+/** Catalogue is pulled from GET /api/products on the server. */
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const PRODUCTS = await fetchProducts();
+
+  const featured = [0, 8, 11, 13, 17].map((i) => PRODUCTS[i]).filter(Boolean);
   const justLanded = PRODUCTS.filter((p) => p.isNew).slice(0, 4);
   const bestSellers = PRODUCTS.filter((p) => p.isBest).slice(0, 8);
 

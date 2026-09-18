@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import SmartImage from '@/components/ui/SmartImage';
-import { LOOKS, getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { formatPrice } from '@/lib/format';
 
 /**
@@ -9,6 +11,8 @@ import { formatPrice } from '@/lib/format';
  * on touch it degrades to a native swipe list.
  */
 export default function LookbookRail() {
+  const { looks, getProduct } = useCatalog();
+
   return (
     <section
       data-horizontal-wrap
@@ -18,7 +22,7 @@ export default function LookbookRail() {
         data-horizontal-track
         className="flex gap-5 overflow-x-auto lg:overflow-visible h-scroll no-scrollbar px-5 md:px-12 lg:w-max"
       >
-        {LOOKS.map((look, i) => (
+        {looks.map((look, i) => (
           <article key={look.n} className="look-panel w-[82vw] sm:w-[420px] lg:w-[520px] shrink-0">
             <div className="relative overflow-hidden border border-white/15 aspect-[3/4]">
               <SmartImage

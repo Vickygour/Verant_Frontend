@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import ProductCard from '@/components/product/ProductCard';
 import PageAnimations from '@/components/ui/PageAnimations';
-import { getProduct } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { useStore } from '@/context/StoreContext';
 
 export default function WishlistClient() {
   const { wishlist, moveToCart } = useStore();
+  const { getProduct } = useCatalog();
   const saved = wishlist.map(getProduct).filter(Boolean);
 
   return (

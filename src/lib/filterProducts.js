@@ -1,11 +1,14 @@
 import { PRODUCTS } from '@/data/products';
 
 /**
- * Apply the Men-collection filter + sort state to the catalogue.
+ * Apply the Men-collection filter + sort state to a catalogue.
+ * Server-side filtering now happens in GET /api/products; this stays as the
+ * offline fallback (and for the free-text box, which filters the fetched page
+ * client-side exactly like the original storefront did).
  * Kept pure so it can be unit-tested without React.
  */
-export function filterProducts(filters) {
-  let list = [...PRODUCTS];
+export function filterProducts(filters, source = PRODUCTS) {
+  let list = [...source];
 
   if (filters.cats.length) list = list.filter((p) => filters.cats.includes(p.cat));
 
@@ -52,11 +55,18 @@ export function filterProducts(filters) {
   return list;
 }
 
-/** Free-text search used by the search overlay. */
-export function searchProducts(query) {
+/** Free-text search — mirrors GET /api/products/search, used as its fallback. */
+export function searchProducts(query, source = PRODUCTS) {
   const q = (query || '').trim().toLowerCase();
-  if (!q) return PRODUCTS.filter((p) => p.isBest).slice(0, 4);
-  return PRODUCTS.filter((p) =>
+  if (!q) return source.filter((p) => p.isBest).slice(0, 4);
+  return source.filter((p) =>
     `${p.name}${p.cat}${p.material}${p.tagline}`.toLowerCase().includes(q),
   );
+}
+
+/** Substring match applied to an already-filtered list (the men search box). */
+export function matchesQuery(list, query) {
+  const q = (query || '').trim().toLowerCase();
+  if (!q) return list;
+  return list.filter((p) => `${p.name}${p.cat}${p.material}`.toLowerCase().includes(q));
 }

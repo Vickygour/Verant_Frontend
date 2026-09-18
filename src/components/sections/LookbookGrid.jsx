@@ -1,12 +1,16 @@
+'use client';
+
 import Link from 'next/link';
 import SmartImage from '@/components/ui/SmartImage';
-import { LOOKS } from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 
 /** Static fallback grid of every look, below the cinematic rail. */
 export default function LookbookGrid() {
+  const { looks } = useCatalog();
+
   return (
     <section className="max-w-[1400px] mx-auto px-5 md:px-12 py-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      {LOOKS.map((look) => (
+      {looks.map((look) => (
         <article key={look.n} className="border border-line bg-white overflow-hidden group" data-reveal>
           <div className="relative overflow-hidden aspect-[3/4]">
             <SmartImage

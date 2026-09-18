@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import SmartImage from '@/components/ui/SmartImage';
-import { searchProducts } from '@/lib/filterProducts';
+import { searchProducts as searchLocally } from '@/lib/filterProducts';
 import { useUI } from '@/context/UIContext';
+import { useCatalog } from '@/context/CatalogContext';
+import productService from '@/lib/api/products.service';
 import { useLockBodyScroll } from '@/hooks/useLockBodyScroll';
 import { formatPrice } from '@/lib/format';
 
@@ -14,7 +16,9 @@ const POPULAR = ['Sneaker', 'Hoodie', 'Silk', 'Leather', 'Cargo'];
 export default function SearchOverlay() {
   const router = useRouter();
   const { overlays, closeSearch } = useUI();
+  const { products } = useCatalog();
   const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
   const inputRef = useRef(null);
 
   const open = overlays.search;
@@ -29,7 +33,27 @@ export default function SearchOverlay() {
     return undefined;
   }, [open]);
 
-  const results = useMemo(() => searchProducts(query), [query]);
+  // Debounced hit on GET /api/products/search — an empty box returns the
+  // API's default suggestions, exactly like the old local behaviour.
+  useEffect(() => {
+    let cancelled = false;
+    const t = setTimeout(() => {
+      productService
+        .search(query)
+        .then((items) => {
+          if (!cancelled) setResults(items);
+        })
+        .catch(() => {
+          if (!cancelled) setResults(searchLocally(query, products));
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [query, products]);
+
   const trimmed = query.trim();
 
   const goTo = (id) => {

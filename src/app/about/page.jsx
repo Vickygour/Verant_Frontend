@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { Check, Gem, Layers, Ruler, Scissors } from 'lucide-react';
 import PageAnimations from '@/components/ui/PageAnimations';
 import SmartImage from '@/components/ui/SmartImage';
-import { CRAFT, unsplash } from '@/data/products';
+import { CRAFT as SEED_CRAFT, unsplash } from '@/data/products';
+import { fetchContent } from '@/lib/api/server';
 
 export const metadata = {
   title: 'About the Maison',
@@ -38,7 +39,13 @@ const DESIGN_POINTS = [
   'Seasonless — 70% of styles never retire',
 ];
 
-export default function AboutPage() {
+/** Craft blocks come from GET /api/content (seed data is the offline fallback). */
+export const revalidate = 60;
+
+export default async function AboutPage() {
+  const content = await fetchContent();
+  const CRAFT = Array.isArray(content.craft) && content.craft.length ? content.craft : SEED_CRAFT;
+
   return (
     <>
       <PageAnimations />

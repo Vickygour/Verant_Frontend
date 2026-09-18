@@ -70,10 +70,10 @@ export default function Hero() {
           <div className="hero-img relative border border-emerald/20 p-3 bg-white shadow-2xl" data-clip>
             <div className="relative w-full aspect-[3/4]">
               <SmartImage
-                src={unsplash('1490481651871-ab68de25d43d', 1000)}
+                src={unsplash('1606107557195-0e29a4b5b4aa', 1000)}
                 alt="Vérant campaign portrait"
                 priority
-                sizes="(max-width: 1024px) 90vw, 40vw"
+                sizes="(max-width: 1024px) 90vw, 40vw"  
                 className="object-cover"
               />
             </div>
@@ -103,27 +103,11 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="hero-el animate-float-a absolute -left-4 md:-left-10 bottom-16 bg-white border border-line shadow-xl p-3 flex items-center gap-3 max-w-[240px]">
-            <div className="relative w-16 h-16 shrink-0">
-              <SmartImage
-                src={unsplash('1542291026-7eec264c27ff', 300)}
-                alt="Verdant Court Low 07"
-                sizes="64px"
-                className="object-cover"
-              />
-            </div>
-            <div>
-              <div className="text-[10px] tracking-[0.2em] uppercase font-extrabold text-emerald">
-                Best Seller
-              </div>
-              <div className="text-xs font-bold mt-1">Verdant Court Low 07</div>
-              <div className="text-xs font-extrabold mt-1">₹14,990</div>
-            </div>
-          </div>
+          
 
           <div className="hero-el animate-float-b absolute -right-2 md:right-6 -bottom-6 bg-emerald-deep text-white px-5 py-4 shadow-xl">
             <div className="text-[10px] tracking-[0.3em] uppercase text-sage font-bold">Craft</div>
-            <div className="font-display text-lg mt-1">40 hrs · One Jacket</div>
+            <div className="font-display text-lg mt-1">40 hrs · One Shoes</div>
           </div>
         </div>
       </div>

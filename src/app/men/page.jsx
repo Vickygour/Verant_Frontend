@@ -1,5 +1,5 @@
 import MenCollection from '@/components/men/MenCollection';
-import { CATEGORIES } from '@/data/products';
+import { fetchCategories } from '@/lib/api/server';
 
 export const metadata = {
   title: 'Men — FW26 Collection',
@@ -7,9 +7,14 @@ export const metadata = {
     'The full Vérant men\'s collection: sneakers, tailoring, heavy cottons, outerwear and accessories. Filter by craft, size, colour and material.',
 };
 
-export default function MenPage({ searchParams }) {
-  const requested = searchParams?.cat;
-  const initialCategory = CATEGORIES.includes(requested) ? requested : null;
+export const revalidate = 60;
+
+export default async function MenPage({ searchParams }) {
+  const params = await searchParams;
+  const categories = await fetchCategories();
+
+  const requested = params?.cat;
+  const initialCategory = categories.includes(requested) ? requested : null;
 
   return <MenCollection initialCategory={initialCategory} />;
 }

@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  CATEGORIES,
-  COLOR_OPTIONS,
-  MATERIAL_OPTIONS,
-  SIZE_OPTIONS,
-} from '@/data/products';
+import { useCatalog } from '@/context/CatalogContext';
 import { formatPrice } from '@/lib/format';
 
 const AVAILABILITY = [
@@ -16,6 +11,13 @@ const AVAILABILITY = [
 
 /** Sidebar facets. Presentational — all state lives in MenCollection. */
 export default function FilterPanel({ filters, onToggle, onMaxPrice, onAvail, onClear, mobileOpen }) {
+  const {
+    categories: CATEGORIES,
+    sizeOptions: SIZE_OPTIONS,
+    colorOptions: COLOR_OPTIONS,
+    materialOptions: MATERIAL_OPTIONS,
+  } = useCatalog();
+
   const mobileClasses = mobileOpen
     ? 'block fixed inset-y-0 left-0 z-[75] w-[300px] max-h-none'
     : 'hidden lg:block';

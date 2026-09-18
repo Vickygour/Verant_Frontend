@@ -1,9 +1,9 @@
 /** Primary navigation — single source of truth for header, mobile menu and footer. */
 export const NAV_LINKS = [
-  { index: '01', label: 'New Features', href: '/new' },
-  { index: '02', label: 'Men', href: '/men' },
-  { index: '03', label: 'Best Seller', href: '/bestseller' },
-  { index: '04', label: 'About', href: '/about' },
+  { index: '', label: 'New Features', href: '/new' },
+  { index: '', label: 'Men', href: '/men' },
+  { index: '', label: 'Best Seller', href: '/bestseller' },
+  { index: '', label: 'About', href: '/about' },
 ];
 
 export const FOOTER_MAISON = [...NAV_LINKS, { index: '05', label: 'Lookbook', href: '/lookbook' }];
