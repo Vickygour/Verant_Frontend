@@ -3,16 +3,20 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import authService from '@/lib/api/auth.service';
 import { getStoredUser, getToken, setStoredUser, setToken } from '@/lib/api/client';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext(null);
 
-/**
- * Session state backed by /api/auth/*.
- * The JWT lives in localStorage and is attached to every axios request by the
- * client interceptor, so nothing else in the app has to think about headers.
- */
+
+
+// /**
+//  * Session state backed by /api/auth/*.
+//  * The JWT lives in localStorage and is attached to every axios request by the
+//  * client interceptor, so nothing else in the app has to think about headers.
+//  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const router = useRouter();
   const [ready, setReady] = useState(false);
 
   // Restore the session on first paint, then re-validate against /auth/me.
@@ -24,6 +28,7 @@ export function AuthProvider({ children }) {
       setReady(true);
       return;
     }
+    
 
     let cancelled = false;
 
@@ -91,13 +96,16 @@ export function AuthProvider({ children }) {
     setToken(null);
     setStoredUser(null);
     setUser(null);
-  }, []);
+    router.push('/login');   // ✅
+  }, [router]);
 
   const value = useMemo(
     () => ({
       user,
       ready,
+      loading: !ready,                 // ✅ alias — Header ke liye
       isAuthenticated: Boolean(user),
+      isLoggedIn: Boolean(user),       // ✅ alias — Header ke liye
       isAdmin: user?.role === 'admin',
       login,
       signup,
