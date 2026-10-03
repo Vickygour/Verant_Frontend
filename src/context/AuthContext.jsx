@@ -7,19 +7,12 @@ import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext(null);
 
-
-
-// /**
-//  * Session state backed by /api/auth/*.
-//  * The JWT lives in localStorage and is attached to every axios request by the
-//  * client interceptor, so nothing else in the app has to think about headers.
-//  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const router = useRouter();
   const [ready, setReady] = useState(false);
 
-  // Restore the session on first paint, then re-validate against /auth/me.
+  // Restore session on first paint, then re-validate against /auth/me.
   useEffect(() => {
     const cached = getStoredUser();
     if (cached) setUser(cached);
@@ -28,7 +21,6 @@ export function AuthProvider({ children }) {
       setReady(true);
       return;
     }
-    
 
     let cancelled = false;
 
@@ -84,6 +76,16 @@ export function AuthProvider({ children }) {
   const forgotPassword = useCallback((email) => authService.forgotPassword(email), []);
   const resetPassword = useCallback((payload) => authService.resetPassword(payload), []);
 
+  // --- Google Sign-In ---
+  const googleLogin = useCallback(
+    async (idToken) => {
+      const res = await authService.googleLogin(idToken);
+      persistSession(res.token, res.user);
+      return res;
+    },
+    [persistSession],
+  );
+
   const refreshUser = useCallback(async () => {
     if (!getToken()) return null;
     const fresh = await authService.getMe();
@@ -96,16 +98,16 @@ export function AuthProvider({ children }) {
     setToken(null);
     setStoredUser(null);
     setUser(null);
-    router.push('/login');   // ✅
+    router.push('/login');
   }, [router]);
 
   const value = useMemo(
     () => ({
       user,
       ready,
-      loading: !ready,                 // ✅ alias — Header ke liye
+      loading: !ready,
       isAuthenticated: Boolean(user),
-      isLoggedIn: Boolean(user),       // ✅ alias — Header ke liye
+      isLoggedIn: Boolean(user),
       isAdmin: user?.role === 'admin',
       login,
       signup,
@@ -113,6 +115,7 @@ export function AuthProvider({ children }) {
       resendOtp,
       forgotPassword,
       resetPassword,
+      googleLogin,
       refreshUser,
       logout,
     }),
@@ -125,6 +128,7 @@ export function AuthProvider({ children }) {
       resendOtp,
       forgotPassword,
       resetPassword,
+      googleLogin,
       refreshUser,
       logout,
     ],

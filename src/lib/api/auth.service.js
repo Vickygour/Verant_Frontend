@@ -26,6 +26,12 @@ export async function login({ email, password }) {
   return { message: res?.message, token: res?.data?.token, user: res?.data?.user };
 }
 
+/** POST /api/auth/google → verifies Google ID token, returns our JWT. */
+export async function googleLogin(idToken) {
+  const res = await api.post('/auth/google', { idToken });
+  return { message: res?.message, token: res?.data?.token, user: res?.data?.user };
+}
+
 /** POST /api/auth/forgot-password → mails a reset OTP. */
 export async function forgotPassword(email) {
   const res = await api.post('/auth/forgot-password', { email });
@@ -49,6 +55,7 @@ const authService = {
   verifyOtp,
   resendOtp,
   login,
+  googleLogin,
   forgotPassword,
   resetPassword,
   getMe,

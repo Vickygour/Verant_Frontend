@@ -2,6 +2,7 @@ import '@/app/globals.css';
 import Providers from '@/app/providers';
 import SiteChrome from '@/components/layout/SiteChrome';
 import { SITE } from '@/data/site';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export const metadata = {
   metadataBase: new URL(SITE.url),
@@ -51,9 +52,11 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-sans">
-        <Providers>
-          <SiteChrome>{children}</SiteChrome>
-        </Providers>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+          <Providers>
+            <SiteChrome>{children}</SiteChrome>
+          </Providers>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );
