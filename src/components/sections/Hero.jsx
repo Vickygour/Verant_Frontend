@@ -23,9 +23,9 @@ export default function Hero() {
 
       <div className="max-w-[1400px] mx-auto w-full grid lg:grid-cols-12 gap-10 items-center relative z-10">
         <div className="lg:col-span-7">
-          <div className="hero-el inline-flex items-center gap-3 border border-emerald/25 bg-white px-4 py-2 text-[10px] tracking-[0.3em] font-extrabold uppercase text-emerald">
+          {/* <div className="hero-el inline-flex items-center gap-3 border border-emerald/25 bg-white px-4 py-2 text-[10px] tracking-[0.3em] font-extrabold uppercase text-emerald">
             <span className="w-2 h-2 bg-emerald pulse-dot" /> Verdant 07 — New Drop Live
-          </div>
+          </div> */}
 
           <h1 className="hero-el font-display h-display text-[15vw] sm:text-7xl lg:text-[6.5rem] mt-6">
             DRESS
@@ -79,7 +79,7 @@ export default function Hero() {
             </div>
 
             <div className="absolute -top-6 -right-4 md:-right-8 w-28 h-28 md:w-32 md:h-32">
-              <div className="spin-slow w-full h-full">
+              {/* <div className="spin-slow w-full h-full">
                 <svg viewBox="0 0 100 100" className="w-full h-full" aria-hidden="true">
                   <defs>
                     <path
@@ -94,21 +94,21 @@ export default function Hero() {
                     <textPath href="#circ">HAND FINISHED · VERDANT 07 · </textPath>
                   </text>
                 </svg>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
+              </div> */}
+              {/* <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-10 h-10 bg-emerald text-white flex items-center justify-center font-italiana text-xl">
                   V
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           
 
-          <div className="hero-el animate-float-b absolute -right-2 md:right-6 -bottom-6 bg-emerald-deep text-white px-5 py-4 shadow-xl">
+          {/* <div className="hero-el animate-float-b absolute -right-2 md:right-6 -bottom-6 bg-emerald-deep text-white px-5 py-4 shadow-xl">
             <div className="text-[10px] tracking-[0.3em] uppercase text-sage font-bold">Craft</div>
             <div className="font-display text-lg mt-1">40 hrs · One Shoes</div>
-          </div>
+          </div> */}
         </div>
       </div>
 
