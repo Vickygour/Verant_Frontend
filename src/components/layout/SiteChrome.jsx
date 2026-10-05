@@ -18,7 +18,7 @@ export default function SiteChrome({ children }) {
 
   return (
     <>
-      <Preloader />
+      {/* <Preloader /> */}
       <CustomCursor />
       <ScrollProgress />
       {!bare && <Header />}

@@ -2,7 +2,7 @@
 export const SITE = {
   name: 'VÉRANT',
   tagline: 'Maison de Couture',
-  established: 'MMXIX',
+  established: 'MMXIXssss',
   description:
     'Sharp tailoring, heavy cottons and hand-finished sneakers. An international maison with an Indian heartbeat — made to be worn for decades, not seasons.',
   email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'concierge@verant-maison.in',
