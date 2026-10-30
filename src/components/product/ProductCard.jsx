@@ -20,6 +20,12 @@ export default function ProductCard({ product, className = '' }) {
   const soldOut = product.stock === 0;
   const href = `/product/${product.id}`;
 
+  // ✅ SAFE IMAGE HANDLING
+  const images = Array.isArray(product?.images) ? product.images.filter(Boolean) : [];
+  const hasImage = images.length > 0;
+  const primaryImage = images[0];
+  const hoverImage = images[1] || primaryImage;
+
   return (
     <article className={`product-card ${className}`} data-reveal>
       <div
@@ -33,18 +39,29 @@ export default function ProductCard({ product, className = '' }) {
           <WishButton productId={product.id} />
         </div>
 
-        <SmartImage
-          src={product.images[0]}
-          alt={product.name}
-          className="main w-full h-full object-cover"
-          sizes="(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 30vw"
-        />
-        <SmartImage
-          src={product.images[1] || product.images[0]}
-          alt={`${product.name} alternate view`}
-          className="alt w-full h-full object-cover"
-          sizes="(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 30vw"
-        />
+        {hasImage ? (
+          <>
+            <SmartImage
+              src={primaryImage}
+              alt={product.name}
+              className="main w-full h-full object-cover"
+              sizes="(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 30vw"
+            />
+            <SmartImage
+              src={hoverImage}
+              alt={`${product.name} alternate view`}
+              className="alt w-full h-full object-cover"
+              sizes="(max-width: 640px) 90vw, (max-width: 1280px) 45vw, 30vw"
+            />
+          </>
+        ) : (
+          // ✅ NO IMAGE PLACEHOLDER
+          <div className="w-full h-full flex items-center justify-center bg-[#F2F0E9] text-center px-4">
+            <span className="text-[10px] tracking-[0.25em] uppercase text-neutral-400 font-bold">
+              No image available
+            </span>
+          </div>
+        )}
 
         <div className="quick-add z-10">
           <button
@@ -64,9 +81,8 @@ export default function ProductCard({ product, className = '' }) {
               e.stopPropagation();
               addToBag(product.id);
             }}
-            className={`flex-1 text-white text-[10px] tracking-[0.2em] font-extrabold uppercase py-3 ${
-              soldOut ? 'bg-ink/40 cursor-not-allowed' : 'bg-emerald hover:bg-emerald-deep'
-            }`}
+            className={`flex-1 text-white text-[10px] tracking-[0.2em] font-extrabold uppercase py-3 ${soldOut ? 'bg-ink/40 cursor-not-allowed' : 'bg-emerald hover:bg-emerald-deep'
+              }`}
           >
             {soldOut ? 'Sold Out' : 'Add to Bag'}
           </button>

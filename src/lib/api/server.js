@@ -5,17 +5,7 @@ import {
 } from '@/data/products';
 import { normalizeProducts, normalizeProduct } from '@/lib/api/normalize';
 
-/**
- * Server-side twin of src/lib/api/client.js, used by React Server Components
- * (home, /new, /bestseller, /product/[id], sitemap).
- *
- * Two guarantees:
- *  1. Every page still renders if the API is unreachable — it falls back to the
- *     seed catalogue in src/data/products.js, which is byte-identical to what
- *     `npm run seed` writes into MongoDB.
- *  2. A single failure trips a short circuit breaker so `next build` never sits
- *     waiting on dozens of dead requests.
- */
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const serverApi = axios.create({

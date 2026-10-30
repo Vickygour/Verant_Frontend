@@ -17,7 +17,9 @@ export default function ProductGallery({ product }) {
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState(null);
 
-  const thumbs = [...product.images, product.images[0]].slice(0, 4);
+  // ✅ FIX 1: Safe image list — no fake duplicate, filters out empty values
+  const images = Array.isArray(product?.images) ? product.images.filter(Boolean) : [];
+  const thumbs = images.slice(0, 4);
 
   const handleMove = (e) => {
     if (window.innerWidth < 768 || !wrapRef.current) return;
@@ -26,6 +28,28 @@ export default function ProductGallery({ product }) {
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setZoom({ x, y });
   };
+
+  // ✅ FIX 2: If no images, show clean placeholder instead of fake image
+  if (!images.length) {
+    return (
+      <div data-reveal>
+        <div className="border border-line bg-white aspect-[3/4] flex items-center justify-center">
+          <span className="text-xs tracking-widest uppercase text-neutral-400">
+            No image available
+          </span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 mt-4 text-center">
+          {PROMISES.map(({ Icon, label }) => (
+            <div key={label} className="border border-line bg-white p-3">
+              <Icon className="w-5 h-5 mx-auto text-emerald" aria-hidden="true" />
+              <div className="text-[10px] font-bold mt-1 tracking-wider uppercase">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div data-reveal>
@@ -46,7 +70,7 @@ export default function ProductGallery({ product }) {
           }}
         >
           <SmartImage
-            src={thumbs[active]}
+            src={thumbs[active] ?? thumbs[0]}
             alt={product.name}
             priority
             sizes="(max-width: 1024px) 100vw, 45vw"
@@ -67,9 +91,8 @@ export default function ProductGallery({ product }) {
             onClick={() => setActive(i)}
             aria-label={`View image ${i + 1}`}
             aria-pressed={active === i}
-            className={`relative border cursor-pointer overflow-hidden aspect-square bg-white ${
-              active === i ? 'border-emerald' : 'border-line'
-            }`}
+            className={`relative border cursor-pointer overflow-hidden aspect-square bg-white ${active === i ? 'border-emerald' : 'border-line'
+              }`}
           >
             <SmartImage
               src={image}
