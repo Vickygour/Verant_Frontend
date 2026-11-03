@@ -52,7 +52,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-sans">
-        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
           <Providers>
             <SiteChrome>{children}</SiteChrome>
           </Providers>

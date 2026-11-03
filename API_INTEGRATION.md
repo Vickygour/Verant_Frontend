@@ -24,7 +24,7 @@ npm run dev         # http://localhost:3000
 `.env.local` (already included):
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+API_URL=http://localhost:5000/api
 ```
 
 The URL **must** include the `/api` prefix — the backend mounts every route
@@ -37,50 +37,50 @@ browser. For local work `CLIENT_URL=http://localhost:3000` is correct.
 
 ## 2. New files
 
-| File | Purpose |
-| --- | --- |
-| `src/lib/api/client.js` | Axios instance, JWT request interceptor, response-envelope unwrapping, error normalisation |
-| `src/lib/api/server.js` | Server-side axios used by React Server Components, with a seed-data fallback + circuit breaker |
-| `src/lib/api/normalize.js` | Maps the backend's `isNewArrival` → the UI's `isNew`, and shapes review documents |
-| `src/lib/api/auth.service.js` | signup · verify-otp · resend-otp · login · forgot-password · reset-password · me |
-| `src/lib/api/products.service.js` | list · fetchAll · getById · featured · search · categories · admin CRUD |
-| `src/lib/api/content.service.js` | looks · craft · testimonials · categoryTiles · size/colour/material options |
-| `src/lib/api/wishlist.service.js` | get · toggle |
-| `src/lib/api/reviews.service.js` | forProduct · create · like · delete |
-| `src/lib/api/orders.service.js` | create · mine · getById · admin all/updateStatus |
-| `src/lib/api/users.service.js` | updateMe · addAddress · deleteAddress · admin list |
-| `src/lib/api/index.js` | Barrel export |
-| `src/context/AuthContext.jsx` | Session state, JWT persistence, `/auth/me` revalidation |
-| `src/context/CatalogContext.jsx` | Client-side catalogue + CMS content, boots from seed then swaps in live data |
-| `src/components/auth/AuthForm.jsx` | The existing auth UI, verbatim, now calling the real endpoints |
+| File                               | Purpose                                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `src/lib/api/client.js`            | Axios instance, JWT request interceptor, response-envelope unwrapping, error normalisation     |
+| `src/lib/api/server.js`            | Server-side axios used by React Server Components, with a seed-data fallback + circuit breaker |
+| `src/lib/api/normalize.js`         | Maps the backend's `isNewArrival` → the UI's `isNew`, and shapes review documents              |
+| `src/lib/api/auth.service.js`      | signup · verify-otp · resend-otp · login · forgot-password · reset-password · me               |
+| `src/lib/api/products.service.js`  | list · fetchAll · getById · featured · search · categories · admin CRUD                        |
+| `src/lib/api/content.service.js`   | looks · craft · testimonials · categoryTiles · size/colour/material options                    |
+| `src/lib/api/wishlist.service.js`  | get · toggle                                                                                   |
+| `src/lib/api/reviews.service.js`   | forProduct · create · like · delete                                                            |
+| `src/lib/api/orders.service.js`    | create · mine · getById · admin all/updateStatus                                               |
+| `src/lib/api/users.service.js`     | updateMe · addAddress · deleteAddress · admin list                                             |
+| `src/lib/api/index.js`             | Barrel export                                                                                  |
+| `src/context/AuthContext.jsx`      | Session state, JWT persistence, `/auth/me` revalidation                                        |
+| `src/context/CatalogContext.jsx`   | Client-side catalogue + CMS content, boots from seed then swaps in live data                   |
+| `src/components/auth/AuthForm.jsx` | The existing auth UI, verbatim, now calling the real endpoints                                 |
 
 ---
 
 ## 3. Endpoint → screen map
 
-| Endpoint | Where it is used |
-| --- | --- |
-| `GET /products` | `/` home, `/new`, `/bestseller`, `/product/[id]` related rail, sitemap (server-side); `MenCollection` facets/sort; `CatalogContext` |
-| `GET /products/:id` | `/product/[id]` page + `generateMetadata` |
-| `GET /products/featured` | Available via `productService.featured()` |
-| `GET /products/search` | `SearchOverlay` (debounced 250 ms) |
-| `GET /products/categories` | `/men` initial category, `FilterPanel` |
-| `GET /content` | `CategoryGrid`, `CraftSection`, `Testimonials`, `LookbookPreview`, `LookbookGrid`, `LookbookRail`, `FilterPanel`, `/about` |
-| `POST /auth/signup` | Register tab → OTP step |
-| `POST /auth/verify-otp` | 6-digit OTP screen (logs the user straight in) |
-| `POST /auth/resend-otp` | "Resend Code Now" |
-| `POST /auth/login` | Sign In tab |
-| `POST /auth/forgot-password` | "Forgot Password?" link |
-| `POST /auth/reset-password` | `authService.resetPassword()` (no screen exists yet) |
-| `GET /auth/me` | `AuthContext` session revalidation on load |
-| `GET /wishlist`, `POST /wishlist/:id` | `StoreContext` — synced on sign-in, mirrored on every heart tap |
-| `GET /products/:id/reviews` | `ProductReviews` list |
-| `POST /products/:id/reviews` | "Submit Review" |
-| `PATCH /reviews/:id/like` | "Helpful" counter |
-| `POST /orders` | "Place Order" on checkout |
-| `POST /users/me/addresses` | Best-effort address-book save after a successful order |
-| `GET /orders/my`, `GET /orders/:id` | `orderService.mine()` / `.getById()` |
-| Admin routes | Wrapped in the services, no admin screen exists yet |
+| Endpoint                              | Where it is used                                                                                                                    |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /products`                       | `/` home, `/new`, `/bestseller`, `/product/[id]` related rail, sitemap (server-side); `MenCollection` facets/sort; `CatalogContext` |
+| `GET /products/:id`                   | `/product/[id]` page + `generateMetadata`                                                                                           |
+| `GET /products/featured`              | Available via `productService.featured()`                                                                                           |
+| `GET /products/search`                | `SearchOverlay` (debounced 250 ms)                                                                                                  |
+| `GET /products/categories`            | `/men` initial category, `FilterPanel`                                                                                              |
+| `GET /content`                        | `CategoryGrid`, `CraftSection`, `Testimonials`, `LookbookPreview`, `LookbookGrid`, `LookbookRail`, `FilterPanel`, `/about`          |
+| `POST /auth/signup`                   | Register tab → OTP step                                                                                                             |
+| `POST /auth/verify-otp`               | 6-digit OTP screen (logs the user straight in)                                                                                      |
+| `POST /auth/resend-otp`               | "Resend Code Now"                                                                                                                   |
+| `POST /auth/login`                    | Sign In tab                                                                                                                         |
+| `POST /auth/forgot-password`          | "Forgot Password?" link                                                                                                             |
+| `POST /auth/reset-password`           | `authService.resetPassword()` (no screen exists yet)                                                                                |
+| `GET /auth/me`                        | `AuthContext` session revalidation on load                                                                                          |
+| `GET /wishlist`, `POST /wishlist/:id` | `StoreContext` — synced on sign-in, mirrored on every heart tap                                                                     |
+| `GET /products/:id/reviews`           | `ProductReviews` list                                                                                                               |
+| `POST /products/:id/reviews`          | "Submit Review"                                                                                                                     |
+| `PATCH /reviews/:id/like`             | "Helpful" counter                                                                                                                   |
+| `POST /orders`                        | "Place Order" on checkout                                                                                                           |
+| `POST /users/me/addresses`            | Best-effort address-book save after a successful order                                                                              |
+| `GET /orders/my`, `GET /orders/:id`   | `orderService.mine()` / `.getById()`                                                                                                |
+| Admin routes                          | Wrapped in the services, no admin screen exists yet                                                                                 |
 
 ---
 

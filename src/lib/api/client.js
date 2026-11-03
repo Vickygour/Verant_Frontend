@@ -4,11 +4,11 @@ import axios from 'axios';
 
 /**
  * Base URL of the VÉRANT Express API.
- * Set NEXT_PUBLIC_API_URL in .env.local — it must include the /api prefix
+ * Set API_URL in .env.local — it must include the /api prefix
  * because every backend route is mounted under app.use('/api', routes).
  */
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+  process.env.API_URL
 
 export const TOKEN_KEY = 'verant_token';
 export const USER_KEY = 'verant_user';

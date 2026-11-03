@@ -86,6 +86,7 @@ export function AuthProvider({ children }) {
     [persistSession],
   );
 
+  
   const refreshUser = useCallback(async () => {
     if (!getToken()) return null;
     const fresh = await authService.getMe();

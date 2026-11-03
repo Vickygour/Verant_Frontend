@@ -8,7 +8,7 @@ import { UIProvider } from '@/context/UIContext';
 
 export default function Providers({ children }) {
   return (
-    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
       <UIProvider>
         <AuthProvider>
           <CatalogProvider>
